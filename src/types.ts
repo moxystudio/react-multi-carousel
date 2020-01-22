@@ -39,8 +39,7 @@ export interface CarouselProps {
   dotListClass?: string; // Use this to style the dot list.
   keyBoardControl?: boolean;
   centerMode?: boolean; // show previous and next set of items partially
-  autoPlay?: boolean;
-  autoPlaySpeed?: number; // default 3000ms
+  autoPlaySpeedMs?: number;
   showDots?: boolean;
   renderDotsOutside?: boolean; // show dots outside of the container for custom styling.
   renderButtonGroupOutside?: boolean; // show buttonGroup outside of the container for custom styling.
