@@ -42,7 +42,6 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     itemClass: "",
     activeItemClass: "",
     keyBoardControl: true,
-    autoPlaySpeed: 3000,
     showDots: false,
     renderDotsOutside: false,
     renderButtonGroupOutside: false,
@@ -157,8 +156,8 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     if (this.props.keyBoardControl) {
       window.addEventListener("keyup", this.onKeyUp as React.EventHandler<any>);
     }
-    if (this.props.autoPlay && this.props.autoPlaySpeed) {
-      this.autoPlay = setInterval(this.next, this.props.autoPlaySpeed);
+    if (this.props.autoPlaySpeedMs) {
+      this.autoPlay = setInterval(this.next, this.props.autoPlaySpeedMs);
     }
   }
 
@@ -293,7 +292,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     this.setItemsToShow(shouldCorrectItemPosition, true);
   }
   public componentDidUpdate(
-    { keyBoardControl, autoPlay, children }: CarouselProps,
+    { keyBoardControl, children }: CarouselProps,
     { containerWidth, domLoaded, currentSlide }: CarouselInternalState
   ): void {
     if (
@@ -314,12 +313,12 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     if (!keyBoardControl && this.props.keyBoardControl) {
       window.addEventListener("keyup", this.onKeyUp as React.EventHandler<any>);
     }
-    if (autoPlay && !this.props.autoPlay && this.autoPlay) {
+    if (!this.props.autoPlaySpeedMs && this.autoPlay) {
       clearInterval(this.autoPlay);
       this.autoPlay = undefined;
     }
-    if (!autoPlay && this.props.autoPlay && !this.autoPlay) {
-      this.autoPlay = setInterval(this.next, this.props.autoPlaySpeed);
+    if (this.props.autoPlaySpeedMs && !this.autoPlay) {
+      this.autoPlay = setInterval(this.next, this.props.autoPlaySpeedMs);
     }
     if (children.length !== this.props.children.length) {
       // this is for handling changing children only.
@@ -454,7 +453,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
         any
       >);
     }
-    if (this.props.autoPlay && this.autoPlay) {
+    if (this.autoPlay) {
       clearInterval(this.autoPlay);
       this.autoPlay = undefined;
     }
@@ -492,7 +491,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     const { clientX, clientY } = isMouseMoveEvent(e) ? e : e.touches[0];
     const diffX = this.initialX - clientX;
     const diffY = this.initialY - clientY;
-    if (!isMouseMoveEvent(e) && this.autoPlay && this.props.autoPlay) {
+    if (!isMouseMoveEvent(e) && this.autoPlay) {
       clearInterval(this.autoPlay);
       this.autoPlay = undefined;
     }
@@ -524,8 +523,8 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     }
   }
   public handleOut(e: React.MouseEvent | React.TouchEvent): void {
-    if (this.props.autoPlay && !this.autoPlay) {
-      this.autoPlay = setInterval(this.next, this.props.autoPlaySpeed);
+    if (this.props.autoPlaySpeedMs && !this.autoPlay) {
+      this.autoPlay = setInterval(this.next, this.props.autoPlaySpeedMs);
     }
     const shouldDisableOnMobile =
       e.type === "touchend" && !this.props.swipeable;
@@ -573,7 +572,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     }
   }
   public handleEnter(): void {
-    if (this.autoPlay && this.props.autoPlay) {
+    if (this.autoPlay && this.props.autoPlaySpeedMs) {
       clearInterval(this.autoPlay);
       this.autoPlay = undefined;
     }
