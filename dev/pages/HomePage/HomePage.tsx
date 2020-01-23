@@ -41,7 +41,7 @@ class Index extends React.Component {
     }
     return { deviceType };
   }
-  state = { isMoving: false }
+  state = { isMoving: false };
   render() {
     const { classes } = this.props;
     const images = [
@@ -70,27 +70,35 @@ class Index extends React.Component {
       .map((item, index) => {
         return {
           image: images[index],
-          headline: 'w3js -> web front-end studio',
+          headline: "w3js -> web front-end studio",
           description: texts[index] || texts[0]
         };
       });
+
+    const isEven = (child: any, n: number) => {
+      return (n + 1) % 2 === 0;
+    };
+
+    const isOdd = (child: any, n: number) => {
+      return (n + 1) % 2 === 1;
+    };
+
     const responsive = {
       desktop: {
         breakpoint: { max: 3000, min: 1024 },
-        items: 3,
-        partialVisibilityGutter: 80
+        items: { slidesToShow: 3 },
+        partialVisibilityGutter: 40
       },
       tablet: {
         breakpoint: { max: 1024, min: 464 },
-        items: 2,
-        partialVisibilityGutter: 30
+        items: { slidesToShow: 2, slidesFilter: isEven }
       },
       mobile: {
         breakpoint: { max: 464, min: 0 },
-        items: 1,
-        partialVisibilityGutter: 30
+        items: { slidesToShow: 1, slidesFilter: isOdd }
       }
     };
+
     return (
       <div className={classes.root}>
         <Carousel
@@ -111,7 +119,9 @@ class Index extends React.Component {
           deviceType={this.props.deviceType}
         >
           {fakerData.map((card, index) => {
-            return <Card index={index} isMoving={this.state.isMoving} {...card} />;
+            return (
+              <Card index={index} isMoving={this.state.isMoving} {...card} />
+            );
           })}
         </Carousel>
 
@@ -125,14 +135,13 @@ class Index extends React.Component {
           showDots
           minimumTouchDrag={80}
           slidesToSlide={1}
-
           partialVisbile={true}
-          //infinite={true}
+          infinite={true}
           containerClass="container-with-dots"
           itemClass="image-item"
           deviceType={this.props.deviceType}
         >
-          {fakerData.slice(0,5).map(card => {
+          {fakerData.slice(0, 5).map(card => {
             return <Image url={card.image} alt={card.headline} />;
           })}
         </Carousel>

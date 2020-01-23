@@ -1,8 +1,9 @@
 import * as React from "react";
+type SlidesFilter = (child: any, n: number) => boolean;
 export interface ResponsiveType {
   [key: string]: {
     breakpoint: { max: number; min: number };
-    items: number;
+    items: { slidesToShow: number; slidesFilter?: SlidesFilter };
     partialVisibilityGutter?: number; // back-ward compatible, because previously there has been a typo
     paritialVisibilityGutter?: number;
     slidesToSlide?: number;
@@ -58,7 +59,6 @@ export interface CarouselProps {
   additionalTransfrom?: number; // this is only used if you want to add additional transfrom to the current transform
 }
 
-
 export type StateCallBack = CarouselInternalState;
 
 export type Direction = "left" | "right" | "" | undefined;
@@ -86,6 +86,8 @@ export interface CarouselInternalState {
   itemWidth: number;
   containerWidth: number;
   slidesToShow: number;
+  slidesFilter?: SlidesFilter;
+  slidesToRender: any[];
   currentSlide: number;
   totalItems: number;
   domLoaded: boolean;

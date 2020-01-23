@@ -22,7 +22,7 @@ const CarouselItems = ({
   clones,
   notEnoughChildren
 }: CarouselItemsProps) => {
-  const { itemWidth } = state;
+  const { itemWidth, slidesToRender } = state;
   const {
     children,
     infinite,
@@ -48,43 +48,41 @@ const CarouselItems = ({
   }
   return (
     <>
-      {(infinite ? clones : React.Children.toArray(children)).map(
-        (child, index) => {
-          return (
-            <li
-              key={index}
-              data-index={index}
-              onClick={() => {
-                if (props.focusOnSelect) {
-                  goToSlide(index);
-                }
-              }}
-              aria-hidden={getIfSlideIsVisbile(index, state) ? "false" : "true"}
-              style={{
-                flex: shouldRenderOnSSR ? `1 0 ${flexBisis}%` : "auto",
-                position: "relative",
-                width: domFullyLoaded
-                  ? `${
-                      // old wrongly spelt partialVisbile prop kept to not make changes breaking
-                      (partialVisbile || partialVisible) &&
-                      partialVisibilityGutter &&
-                      !notEnoughChildren
-                        ? itemWidth - partialVisibilityGutter
-                        : itemWidth
-                    }px`
-                  : "auto"
-              }}
-              className={`react-multi-carousel-item ${itemClass} ${
-                getIfSlideIsVisbile(index, state)
-                  ? `react-multi-carousel-item--active ${activeItemClass}`
-                  : ""
-              }`}
-            >
-              {child}
-            </li>
-          );
-        }
-      )}
+      {(infinite ? clones : slidesToRender).map((child, index) => {
+        return (
+          <li
+            key={index}
+            data-index={index}
+            onClick={() => {
+              if (props.focusOnSelect) {
+                goToSlide(index);
+              }
+            }}
+            aria-hidden={getIfSlideIsVisbile(index, state) ? "false" : "true"}
+            style={{
+              flex: shouldRenderOnSSR ? `1 0 ${flexBisis}%` : "auto",
+              position: "relative",
+              width: domFullyLoaded
+                ? `${
+                    // old wrongly spelt partialVisbile prop kept to not make changes breaking
+                    (partialVisbile || partialVisible) &&
+                    partialVisibilityGutter &&
+                    !notEnoughChildren
+                      ? itemWidth - partialVisibilityGutter
+                      : itemWidth
+                  }px`
+                : "auto"
+            }}
+            className={`react-multi-carousel-item ${itemClass} ${
+              getIfSlideIsVisbile(index, state)
+                ? `react-multi-carousel-item--active ${activeItemClass}`
+                : ""
+            }`}
+          >
+            {child}
+          </li>
+        );
+      })}
     </>
   );
 };
