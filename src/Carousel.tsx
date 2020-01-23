@@ -73,6 +73,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
       slidesToShow: 0,
       currentSlide: 0,
       totalItems: React.Children.count(props.children),
+      slidesToRender: React.Children.toArray(props.children),
       deviceType: "",
       domLoaded: false,
       transform: 0,
@@ -111,7 +112,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
   }
   // we only use this when infinite mode is off
   public resetTotalItems(): void {
-    const totalItems = React.Children.count(this.props.children);
+    const totalItems = this.state.slidesToRender.length;
     const currentSlide = notEnoughChildren(this.state)
       ? 0
       : // this ensures that if the currentSlide before change in childrenCount is more than new childrenCount; we will set it to new childrenCount
@@ -176,7 +177,7 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     // because the first time we set the clones, we change the position of all carousel items when entering client-side from server-side.
     // but still, we want to maintain the same position as it was on the server-side which is translateX(0) by getting the couter part of the original first slide.
     this.isAnimationAllowed = false;
-    const childrenArr = React.Children.toArray(this.props.children);
+    const childrenArr = this.state.slidesToRender;
     const initialSlide = getInitialSlideInInfiniteMode(
       slidesToShow || this.state.slidesToShow,
       childrenArr
@@ -201,14 +202,31 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
     shouldCorrectItemPosition?: boolean,
     resetCurrentSlide?: boolean
   ): void {
-    const { responsive } = this.props;
+    const { responsive, children } = this.props;
+
     Object.keys(responsive).forEach(item => {
       const { breakpoint, items } = responsive[item];
+
+      const { slidesToShow, slidesFilter } = items;
       const { max, min } = breakpoint;
+
+      const childrenArray = React.Children.toArray(children);
+
+      const slidesToRender = slidesFilter
+        ? childrenArray.filter(slidesFilter)
+        : childrenArray;
+
+      const totalItems = slidesToRender.length;
+
       if (window.innerWidth >= min && window.innerWidth <= max) {
-        this.setState({ slidesToShow: items, deviceType: item });
+        this.setState({
+          slidesToShow,
+          slidesToRender,
+          totalItems,
+          deviceType: item
+        });
         this.setContainerAndItemWidth(
-          items,
+          slidesToShow,
           shouldCorrectItemPosition,
           resetCurrentSlide
         );
@@ -663,10 +681,13 @@ class Carousel extends React.Component<CarouselProps, CarouselInternalState> {
   }
   public renderCarouselItems() {
     let clones = [];
+
+    const { slidesToRender, slidesToShow } = this.state;
+
     if (this.props.infinite) {
-      const childrenArr = React.Children.toArray(this.props.children);
-      clones = getClones(this.state.slidesToShow, childrenArr);
+      clones = getClones(slidesToShow, slidesToRender);
     }
+
     return (
       <CarouselItems
         clones={clones}

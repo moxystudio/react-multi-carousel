@@ -22,29 +22,28 @@ const Dots = ({
   goToSlide,
   getState
 }: DotsTypes): React.ReactElement<any> | null => {
-  const { showDots, customDot, dotListClass, infinite, children } = props;
+  const { showDots, customDot, dotListClass, infinite } = props;
   if (!showDots || notEnoughChildren(state)) {
     return null;
   }
-  const { currentSlide, slidesToShow } = state;
+  const { currentSlide, slidesToShow, slidesToRender } = state;
   const slidesToSlide = getSlidesToSlide(state, props);
-  const childrenArr = React.Children.toArray(children);
   let numberOfDotsToShow: number;
   if (!infinite) {
     numberOfDotsToShow =
-      Math.ceil((childrenArr.length - slidesToShow) / slidesToSlide!) + 1;
+      Math.ceil((slidesToRender.length - slidesToShow) / slidesToSlide!) + 1;
   } else {
-    numberOfDotsToShow = Math.ceil(childrenArr.length / slidesToSlide!);
+    numberOfDotsToShow = Math.ceil(slidesToRender.length / slidesToSlide!);
   }
   const nextSlidesTable = getLookupTableForNextSlides(
     numberOfDotsToShow,
     state,
     props,
-    childrenArr
+    slidesToRender
   );
   const lookupTable = getOriginalIndexLookupTableByClones(
     slidesToShow,
-    childrenArr
+    slidesToRender
   );
   const currentSlides = lookupTable[currentSlide];
   return (
@@ -55,7 +54,7 @@ const Dots = ({
           let isActive;
           let nextSlide: number;
           if (!infinite) {
-            const maximumNextSlide = childrenArr.length - slidesToShow;
+            const maximumNextSlide = slidesToRender.length - slidesToShow;
             const possibileNextSlides = index * slidesToSlide!;
             const isAboutToOverSlide = possibileNextSlides > maximumNextSlide;
             nextSlide = isAboutToOverSlide
@@ -65,7 +64,7 @@ const Dots = ({
               nextSlide === currentSlide ||
               (currentSlide > nextSlide &&
                 currentSlide < nextSlide + slidesToSlide! &&
-                currentSlide < childrenArr.length - slidesToShow);
+                currentSlide < slidesToRender.length - slidesToShow);
           } else {
             nextSlide = nextSlidesTable[index];
             const cloneIndex = lookupTable[nextSlide];
